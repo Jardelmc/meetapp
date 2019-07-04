@@ -1,10 +1,12 @@
 import Sequelize from 'sequelize';
 
 import User from '../app/models/User';
+import File from '../app/models/File';
+import Meetup from '../app/models/Meetups';
 
 import databaseConfig from '../config/database';
 
-const models = [User];
+const models = [User, File, Meetup];
 
 class Database {
   constructor() {
@@ -14,7 +16,10 @@ class Database {
   init() {
     this.connection = new Sequelize(databaseConfig);
 
-    models.map(model => model.init(this.connection));
+    models
+      .map(model => model.init(this.connection))
+      .map(model => model.associate && model.associate(this.connection.models));
+    // Na linha acima estou percorrendo novamente o model, e se existir um médoto chamado associate dentro de algum, chamo ele.
   }
 }
 
